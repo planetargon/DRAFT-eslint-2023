@@ -58,6 +58,10 @@ module.exports = (async () => {
 })();
 ```
 
+::: warning
+ESLint only automatically looks for a config file named `eslint.config.js` and does not look for `eslint.config.cjs` or `eslint.config.mjs`. If you'd like to specify a different config filename than the default, use the `--config` command line option.
+:::
+
 ## Configuration Objects
 
 Each configuration object contains all of the information ESLint needs to execute on a set of files. Each configuration object is made up of these properties:
@@ -72,7 +76,7 @@ Each configuration object contains all of the information ESLint needs to execut
     * `parserOptions` - An object specifying additional options that are passed directly to the `parse()` or `parseForESLint()` method on the parser. The available options are parser-dependent.
 * `linterOptions` - An object containing settings related to the linting process.
     * `noInlineConfig` - A Boolean value indicating if inline configuration is allowed.
-    * `reportUnusedDisableDirectives` - A Boolean value indicating if unused disable directives should be tracked and reported.
+    * `reportUnusedDisableDirectives` - A Boolean value indicating if unused disable and enable directives should be tracked and reported.
 * `processor` - Either an object containing `preprocess()` and `postprocess()` methods or a string indicating the name of a processor inside of a plugin (i.e., `"pluginName/processorName"`).
 * `plugins` - An object containing a name-value mapping of plugin names to plugin objects. When `files` is specified, these plugins are only available to the matching files.
 * `rules` - An object containing the configured rules. When `files` or `ignores` are specified, these rule configurations are only available to the matching files.
@@ -240,7 +244,7 @@ export default [
 
 #### Reporting unused disable directives
 
-Disable directives such as `/*eslint-disable*/` and `/*eslint-disable-next-line*/` are used to disable ESLint rules around certain portions of code. As code changes, it's possible for these directives to no longer be needed because the code has changed in such a way that the rule is no longer triggered. You can enable reporting of these unused disable directives by setting the `reportUnusedDisableDirectives` option to `true`, as in this example:
+Disable and enable directives such as `/*eslint-disable*/`, `/*eslint-enable*/` and `/*eslint-disable-next-line*/` are used to disable ESLint rules around certain portions of code. As code changes, it's possible for these directives to no longer be needed because the code has changed in such a way that the rule is no longer triggered. You can enable reporting of these unused disable directives by setting the `reportUnusedDisableDirectives` option to `true`, as in this example:
 
 ```js
 export default [
@@ -253,7 +257,7 @@ export default [
 ];
 ```
 
-By default, unused disable directives are reported as warnings. You can change this setting using the `--report-unused-disable-directives` command line option.
+By default, unused disable and enable directives are reported as warnings. You can change this setting using the `--report-unused-disable-directives` command line option.
 
 ### Configuring language options
 
@@ -471,7 +475,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 
 export default [
     // configuration included in plugin
-    jsdoc.configs.recommended,
+    jsdoc.configs["flat/recommended"],
     // other configuration objects...
     {
         files: ["**/*.js"],
@@ -667,7 +671,7 @@ When ESLint is run on the command line, it first checks the current working dire
 You can prevent this search for `eslint.config.js` by setting the `ESLINT_USE_FLAT_CONFIG` environment variable to `true` and using the `-c` or `--config` option on the command line to specify an alternate configuration file, such as:
 
 ```shell
-ESLINT_USE_FLAT_CONFIG=true npx eslint -c some-other-file.js **/*.js
+ESLINT_USE_FLAT_CONFIG=true npx eslint --config some-other-file.js **/*.js
 ```
 
 In this case, ESLint does not search for `eslint.config.js` and instead uses `some-other-file.js`.
